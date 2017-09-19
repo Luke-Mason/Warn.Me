@@ -3,16 +3,22 @@ package application;
 import javafx.fxml.FXMLLoader;
 import java.io.File;
 import java.io.IOException;
+
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+
 import javafx.application.Application;
 import javafx.stage.Stage;
+import program.Database;
+import program.ReadFile;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 public class Main extends Application {
 	private static Logger log = Logger.getLogger(Main.class);
 	public Main(){log.setLevel(Level.INFO);}
+	
 	
 	@Override
 	public void start(Stage primaryStage) {
@@ -27,15 +33,22 @@ public class Main extends Application {
 		}
 	}
 	
-	public static void main(String[] args) {
-		launch(args);
-		if(args.length != 1)//Checking for the argument e.g test.txt
-		{
-			log.warn("Invalid command line, exactly one argument required");
-			System.exit(1);
+	public static void checkAndCreateDatabase(String file)
+	{
+		File db = new File("Database/"+file);
+		if (!db.exists()) {
+			log.debug("Creating Database "+file);
+			Database data = new Database(file);
+			data.createTable(file);
 		}
+	}
+
+	public static void main(String[] args) {
+		BasicConfigurator.configure();//configuring log4j
+		checkAndCreateDatabase("phishing.db");
 		
-		File path = new File(args[0]);//Getting path
+		launch(args);
+		File path = new File("Email/test.txt");
 		String fileName = path.getAbsolutePath();
 		
 		String[] fileLines = null;
@@ -58,5 +71,5 @@ public class Main extends Application {
 		//TODO Read file format
 		//TODO return % RISK
 		return;
-	}
+	}	
 }
