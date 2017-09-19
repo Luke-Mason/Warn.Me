@@ -1,15 +1,14 @@
 package application;
+
+import javafx.fxml.FXMLLoader;
 import java.io.File;
 import java.io.IOException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
-
-
 
 public class Main extends Application {
 	private static Logger log = Logger.getLogger(Main.class);
@@ -18,14 +17,11 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-			BorderPane root = new BorderPane();
-			
-			
-			Scene scene = new Scene(root,400,400);
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setTitle("Warn Me - Email Risk Calculator");
-			primaryStage.setScene(scene);
-			primaryStage.show();
+	        Parent root = FXMLLoader.load(getClass().getResource("Sample.fxml"));
+	        primaryStage.setTitle("Warn Me - Email Risk Calculator");
+	        primaryStage.setScene(new Scene(root));
+	        primaryStage.setResizable(true);
+	        primaryStage.show();		
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
