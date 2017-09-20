@@ -1,12 +1,12 @@
-package application;
+package program;
 import java.io.*;
 
 public class ReadFile {
-	private String file_path;
+	private String filePath;
 	
-	public ReadFile(String file_path)
+	public ReadFile(String filePath)
 	{
-		this.file_path = file_path; 
+		this.filePath = filePath; 
 	}
 	
 	/**
@@ -16,7 +16,7 @@ public class ReadFile {
 	 */
 	public int readLines() throws IOException
 	{
-		FileReader fr = new FileReader(file_path);
+		FileReader fr = new FileReader(filePath);
 		BufferedReader br = new BufferedReader(fr);
 		int numberOfLines = 0;
 		while(br.readLine() != null)
@@ -35,7 +35,7 @@ public class ReadFile {
 	 */
 	public String[] openFile() throws IOException
 	{
-		FileReader fr = new FileReader(file_path);
+		FileReader fr = new FileReader(filePath);
 		BufferedReader textReader = new BufferedReader(fr);
 		int numberOfLines = readLines();
 		String[] textData = new String[numberOfLines];
