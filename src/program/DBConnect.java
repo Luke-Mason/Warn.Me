@@ -29,7 +29,7 @@ public class DBConnect {
 
 		String url = "jdbc:sqlite:Database/phishing.db";
         Connection connect = null;
-        try {
+        try { 
             connect = DriverManager.getConnection(url);
         } catch (SQLException sqle) {
             //System.out.println(sqle.getMessage());
