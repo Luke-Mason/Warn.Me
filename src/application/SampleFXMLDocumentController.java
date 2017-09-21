@@ -60,14 +60,14 @@ public class SampleFXMLDocumentController implements Initializable{
 		Controller control = new Controller();
 		String text = textArea.getText();
 		//log.info("\n"+text+"\n");
-		int linkRisk = control.checkLinkRisk(text);
-		int emailRisk = control.checkEmailRisk(text);
-		int phraseRisk = control.checkPhraseRisk(text);
+		double linkRisk = control.checkLinkRisk(text);
+		double emailRisk = control.checkEmailRisk(text);
+		double phraseRisk = control.checkPhraseRisk(text);
 		/*CALCULATE RISK*/
-		int safe;
+		double safe;
 		double linkRiskRatio = 0, emailRiskRatio = 0, phraseRiskRatio = 0;
-		int[] totals = {linkRisk,emailRisk,phraseRisk};
-		int risk = 0;
+		double[] totals = {linkRisk,emailRisk,phraseRisk};
+		double risk = 0;
 		
 		/*FIND BIGEST VALUE*/
 		for(int i = 0; i < totals.length; i++)
@@ -76,15 +76,23 @@ public class SampleFXMLDocumentController implements Initializable{
 				risk = totals[i];
 		}
 		
-		int totalRisk = linkRisk + emailRisk + phraseRisk;
+		double totalRisk = linkRisk + emailRisk + phraseRisk;
 		safe = 100 - risk;
 		if(totalRisk > 0)
 		{
-			linkRiskRatio = linkRisk/totalRisk;
-			emailRiskRatio =  emailRisk/totalRisk;
-			phraseRiskRatio =  phraseRisk/totalRisk;
+			linkRiskRatio = (linkRisk/totalRisk)*100;
+			emailRiskRatio =  (emailRisk/totalRisk)*100;
+			phraseRiskRatio =  (phraseRisk/totalRisk)*100;
 		}
+		System.out.println(totalRisk);
+		System.out.println(linkRisk);
+		System.out.println(emailRisk);
+		System.out.println(phraseRisk);
 		
+		System.out.println(linkRiskRatio);
+		System.out.println(emailRiskRatio);
+		System.out.println(phraseRiskRatio);
+		System.out.println(safe);
 		ObservableList<PieChart.Data> pieChartData = 
                 FXCollections.observableArrayList(
                     new PieChart.Data("Risky Links", linkRiskRatio),
@@ -100,7 +108,7 @@ public class SampleFXMLDocumentController implements Initializable{
 			
 			refreshList();			
 			System.out.println(warnList);
-			label2.setText(totalRisk+"% Detected Risk");
+			label2.setText(risk+"% Detected Risk");
     	    label2.setVisible(true);
     	    pieChart.setTitle("Warn Me");
 	        pieChart.setLabelsVisible(true);
