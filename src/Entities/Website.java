@@ -10,7 +10,11 @@ public class Website {
 		address = null;
 		listType = "unknown";
 	}
-	
+	public Website(String address)
+	{
+		this.address = address;
+		this.listType = "unknown";
+	}
 	public Website(String address, String listType)
 	{
 		this.address = address;

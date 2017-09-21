@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.chart.*?>
 <?import java.net.*?>
 <?import javafx.scene.*?>
@@ -36,7 +38,7 @@
    <top>
       <AnchorPane prefHeight="44.0" prefWidth="565.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="label" layoutX="-16.0" layoutY="14.0" prefHeight="45.0" prefWidth="359.0" text="Copy &amp; Paste the Email Below" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-16.0" AnchorPane.rightAnchor="369.0" AnchorPane.topAnchor="14.0">
+            <Label fx:id="label1" layoutX="-16.0" layoutY="14.0" prefHeight="45.0" prefWidth="359.0" text="Copy &amp; Paste the Email Below" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="-16.0" AnchorPane.rightAnchor="369.0" AnchorPane.topAnchor="14.0">
                <padding>
                   <Insets left="25.0" />
                </padding>
@@ -50,6 +52,27 @@
       </AnchorPane>
    </top>
    <right>
-      <PieChart fx:id="pieChart" prefHeight="263.0" prefWidth="242.0" BorderPane.alignment="CENTER" />
+      <SplitPane dividerPositions="0.7595238095238095" orientation="VERTICAL" prefHeight="332.0" prefWidth="223.0" BorderPane.alignment="CENTER">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="15.0" prefWidth="76.0">
+               <children>
+                  <PieChart fx:id="pieChart" prefHeight="273.0" prefWidth="221.0" startAngle="90.0" stylesheets="@application.css" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <Label fx:id="label2" alignment="CENTER" contentDisplay="CENTER" layoutY="280.0" prefHeight="36.0" prefWidth="221.0" text="Percentage" textAlignment="RIGHT" textFill="WHITE" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <ListView fx:id="warnList" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+        </items>
+         <BorderPane.margin>
+            <Insets right="15.0" />
+         </BorderPane.margin>
+      </SplitPane>
    </right>
 </BorderPane>

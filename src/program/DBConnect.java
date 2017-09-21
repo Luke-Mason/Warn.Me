@@ -1,6 +1,7 @@
 package program;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,10 +12,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import Entities.*;
+import application.Main;
 
 
 public class DBConnect {
-	private static Logger log = Logger.getLogger(DBConnect.class);
+	private static Logger log = Logger.getLogger(Main.class);
 	public DBConnect()
 	{
 		log.setLevel(Level.DEBUG);
@@ -32,7 +34,6 @@ public class DBConnect {
         try { 
             connect = DriverManager.getConnection(url);
         } catch (SQLException sqle) {
-            //System.out.println(sqle.getMessage());
             log.warn(sqle.getMessage());
         }
         return connect;
@@ -54,16 +55,34 @@ public class DBConnect {
 		}
 	}
 	
+	public void addEmail(String domain, Date firstSeen, Date lastSeen, int numberOfOccurences, String listType)
+	{
+		String query = "INSERT INTO EMAILS VALUES (?,?,?,?,?);";
+		try (Connection connect = this.connect(); PreparedStatement  inject  = connect.prepareStatement(query))
+		{
+			inject.setString(1,domain);
+			inject.setDate(2,firstSeen);
+			inject.setDate(3,lastSeen);
+			inject.setInt(4,numberOfOccurences);
+			inject.setString(5,listType);
+			inject.execute();
+		}
+		catch(SQLException sqle)
+		{
+			log.warn(sqle.getMessage());
+		}
+	}
+	
 	public ArrayList<Website> findWebsites(String keyword)
 	{
-		log.debug("IN getEmployees\n");
+		log.debug("IN findWebsites\n");
 		ArrayList<Website> ws = new ArrayList<>();
 		String address;
 		String listType; 
 		
 		String query = 	  "SELECT * "
 						+ "FROM WEBSITES "
-						+ "WHERE address LIKE '?'";
+						+ "WHERE domain LIKE ?";
 
 		try (Connection connect = this.connect(); PreparedStatement  inject  = connect.prepareStatement(query))
 		{
@@ -80,20 +99,17 @@ public class DBConnect {
 		}
 		catch(SQLException sqle)
 		{
-			//System.out.println("Getting Employee: "+sqle.getMessage());
 			log.warn(sqle.getMessage());
 		}
-		log.debug("OUT getWebsite\n");
+		log.debug("OUT findWebsites\n");
 		return ws;
 	}
 	
 	public Website getWebsite(String address)
 	{
-		log.debug("IN getEmployees\n");
-		Website ws = new Website();		
-		String query = 	  "SELECT * "
-						+ "FROM WEBSITES "
-						+ "WHERE address = '?'";
+		log.debug("IN getWebsites\n");
+		Website ws = null;		
+		String query = 	  "SELECT * FROM WEBSITES WHERE domain = ?";
 
 		try (Connection connect = this.connect(); PreparedStatement  inject  = connect.prepareStatement(query))
 		{
@@ -101,12 +117,14 @@ public class DBConnect {
 			//crates a user from the found information
 			inject.setString(1,address);
 			ResultSet output = inject.executeQuery();
-			ws = new Website(output.getString(1), output.getString(2));
+			if(!output.first())
+				ws = new Website(address);
+			else		
+				ws = new Website(output.getString(1), output.getString(2));
 			output.close();
 		}
 		catch(SQLException sqle)
 		{
-			//System.out.println("Getting Employee: "+sqle.getMessage());
 			log.warn(sqle.getMessage());
 		}
 		log.debug("OUT getWebsite\n");
@@ -119,7 +137,7 @@ public class DBConnect {
 		ArrayList<Website> ws = new ArrayList<>();		
 		String query = 	  "SELECT * "
 						+ "FROM WEBSITES "
-						+ "WHERE white_black_listed = '?'";
+						+ "WHERE white_black_listed = ?";
 
 		try (Connection connect = this.connect(); PreparedStatement  inject  = connect.prepareStatement(query))
 		{
@@ -128,45 +146,53 @@ public class DBConnect {
 			inject.setString(1,listType);
 			ResultSet output = inject.executeQuery();
 			while (output.next()){
-				ws.add(new Website(output.getString(1), output.getString(2)));
+				String domain = output.getString(1);
+				String list = output.getString(2);
+				ws.add(new Website(domain,list));
 			}
 			output.close();
 		}
 		catch(SQLException sqle)
 		{
-			//System.out.println("Getting Employee: "+sqle.getMessage());
 			log.warn(sqle.getMessage());
 		}
 		log.debug("OUT getWebsitesOfListType\n");
 		return ws;
 	}
 	
-	public Email getEmail(String address)
+	public Email getEmail(String domain)
 	{
-		log.debug("IN getEmployees\n");
-		Email email = new Email();		
-		String query = 	  "SELECT * "
-						+ "FROM EMAILS "
-						+ "WHERE address = '?'";
+		log.debug("IN getEmail\n");
+		Email email = new Email(domain);	
+		String newAddress = "";
+		Date firstSeen = null;
+		Date lastSeen = null;
+		int numberOfOccurences = 0;
+		String listType = "";
+		String query = 	  "SELECT * FROM EMAILS WHERE address = ?";
 
 		try (Connection connect = this.connect(); PreparedStatement  inject  = connect.prepareStatement(query))
 		{
 			//Sets '?' to user name in the query
 			//crates a user from the found information
-			inject.setString(1,address);
-			ResultSet output = inject.executeQuery();
-			if(!output.first())
-				email = new Email(address);
-			else
-				email = new Email(output.getString(1),output.getDate(2),output.getDate(3),output.getInt(4),output.getString(5));
+			inject.setString(1,domain);
+			ResultSet output = inject.executeQuery();	
+			while(output.next())
+			{
+				newAddress = output.getString(1);
+				firstSeen = output.getDate(2);
+				lastSeen = output.getDate(3);
+				numberOfOccurences = output.getInt(4);
+				listType = output.getString(5);
+			}
+			email = new Email(domain,firstSeen,lastSeen,numberOfOccurences,listType);
 			output.close();
 		}
 		catch(SQLException sqle)
 		{
-			//System.out.println("Getting Employee: "+sqle.getMessage());
 			log.warn(sqle.getMessage());
 		}
-		log.debug("OUT getWebsite\n");
+		log.debug("OUT getEmail\n");
 		return email;
 	}
 }

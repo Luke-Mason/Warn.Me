@@ -68,7 +68,7 @@ public class ControllerTest {
 		//Printing out the contents to screen as test
 		for(int i = 0; i < fileLines.length; i++)
 		{
-			control.findEmails(fileLines[i]);
+			control.findEmailsInText(fileLines[i]);
 		}
 	}
 	

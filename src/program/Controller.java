@@ -1,12 +1,20 @@
 package program;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import Entities.Email;
+import Entities.Warning;
+import application.Main;
+import application.SampleFXMLDocumentController;
 
 public class Controller {
-
-	public Controller(){}
+	private static Logger log = Logger.getLogger(Main.class);
+	public Controller(){log.setLevel(Level.INFO);}
 	DBConnect connect;
 	/**
 	 * Finds email address with highest risk score and returns that /100
@@ -15,24 +23,41 @@ public class Controller {
 	 */
 	public int checkEmailRisk(String text)
 	{
+		SampleFXMLDocumentController sampleControl = new SampleFXMLDocumentController();
+		log.info("IN checkEmailRisk\n");
 		ArrayList<Integer> risk = new ArrayList<>();
 		connect = new DBConnect();
 		int highestRisk = 0;
 		ArrayList<String> foundEmails = findEmailsInText(text);
-		//setClass combine duplicates
+
+		/*REMOVING DUPLICATES*/
+		Set<String> hs = new HashSet<>();
+		hs.addAll(foundEmails);
+		foundEmails.clear();
+		foundEmails.addAll(hs);
+		
+		log.debug("Emails found in text: "+foundEmails);
+		
 		for(String fe: foundEmails)
 		{
 			Email email = connect.getEmail(fe);
-			//if(email.getNumberOfOccurences() == 0){}
-				//make warning
+			System.out.println(email.toString());
+			if(email.getNumberOfOccurences() == 0)
+			{
+				sampleControl.warnings.add(new Warning("WARNING: Foreign Email <"+email.getAddress()+">"));
+			}
 			if(email.getListType().equals("black"))
+			{
 				risk.add(100);
+				sampleControl.warnings.add(new Warning("RISK: Blacklisted Email <"+email.getAddress()+">"));
+			}
 		}
 		for(int r: risk)
 		{
 			if(r > highestRisk)
 				highestRisk = r;
 		}
+		log.info("OUT checkEmailRisk\n");
 		return highestRisk;
 	}
 
@@ -48,6 +73,7 @@ public class Controller {
 
 	public ArrayList<String> findEmailsInText(String text)
 	{
+		log.info("IN findEmailsInText\n");
 		ArrayList<String> emails = new ArrayList<>();
 		int index = 0;
 		int index2 = 0;
@@ -56,7 +82,10 @@ public class Controller {
 		while((index = text.indexOf('@',index2)) != -1)
 		{
 			index2 = index;
-			index--;//move 1 to left to avoid comparing @ symbol
+			if(index > 0)
+				index--;//move 1 to left to avoid comparing @ symbol
+			else
+				count = 65;
 			
 			while(count < 65)
 			{
@@ -72,15 +101,21 @@ public class Controller {
 				}
 				else
 					break;
-				if(index <= 0)
+				if(index < 0)
 					break;
 			}
 			count = 0;
 			index++;//so it is pointing to a valid char and not stuck on invalid, from exit of while
-			index2++;//move 1 to right to avoid comparing @ symbol
+			if(index2 < text.length()-1)
+				index2++;//move 1 to right to avoid comparing @ symbol
+			else
+			{	
+				index2 = text.length();
+				System.out.println("continue");
+				continue;
+			}
 			while(count < 255)
 			{
-				//System.out.println(text.charAt(index2));
 				boolean isCharBetween97And123 = (int)text.charAt(index2) >= 97 && (int)text.charAt(index2) <= 122;
 				boolean isChar95or45or46 = (int)text.charAt(index2) == 95 || (int)text.charAt(index2) == 45 || (int)text.charAt(index2) == 46;
 				boolean isCharBetween64And91 = (int)text.charAt(index2) >= 65 && (int)text.charAt(index2) <= 90;
@@ -98,19 +133,28 @@ public class Controller {
 					break;
 				}
 			}
-			//System.out.println("Index First = "+index+"  Index End = "+index2);
-			email = text.substring(index,index2);
-			System.out.println(email);
-			if(isValidEmailAddress(email) && email != null && email.length() < 255)
-				emails.add(email);
+			log.debug("index = "+index+" index2 = "+index2+"\n");
+			if(index <= index2 && index >= 0 && index2 <= text.length())
+			{
+				email = text.substring(index,index2);
+				System.out.println("Checking Email: "+email);
+				if(isValidEmailAddress(email) /*&& email != null && email.length() < 255*/)
+				{
+					emails.add(email);
+					System.out.println(email+" IS VALID");
+				}
+			}			
 		}
+		log.info("OUT findEmailsInText\n");
 		return emails;		
 	}
 
 	public static boolean isValidEmailAddress(String email) {
+		log.info("IN isValidEmailAddress\n");
         String ePattern = "^[a-zA-Z0-9._-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
         java.util.regex.Pattern p = java.util.regex.Pattern.compile(ePattern);
         java.util.regex.Matcher m = p.matcher(email);
+        log.info("OUT isValidEmailAddress\n");
         return m.matches();
 		}
 	

@@ -1,7 +1,8 @@
 package Entities;
 
+import java.sql.Date;
 import java.util.Calendar;
-import java.util.Date;
+
 
 public class Email {
 
@@ -21,10 +22,9 @@ public class Email {
 	{
 		this.address = address;
 		this.listType = "unknown";
-		Calendar cal = Calendar.getInstance();
-		this.firstSeen = cal.getTime();
-		this.lastSeen = cal.getTime();
-		this.numberOfOccurences = 0;
+		this.firstSeen = new java.sql.Date(Calendar.getInstance().getTimeInMillis());
+		this.lastSeen = new java.sql.Date(Calendar.getInstance().getTimeInMillis());
+
 	}
 	
 	public Email(String address,Date firstSeen, Date lastSeen, int numberOfOccurences, String listType)
@@ -88,6 +88,11 @@ public class Email {
 	public void addOccurence()
 	{
 		numberOfOccurences++;
+	}
+	
+	public String toString()
+	{
+		return "Domain: "+address+" | First Seen at: "+firstSeen+" | Last Seen at: "+lastSeen+" | Number of Occurences: "+numberOfOccurences+" | List Type: "+listType; 
 	}
 	
 }
