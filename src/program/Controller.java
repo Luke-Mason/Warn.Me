@@ -2,22 +2,38 @@ package program;
 
 import java.util.ArrayList;
 
+import Entities.Email;
+
 public class Controller {
 
 	public Controller(){}
-	
+	DBConnect connect;
 	/**
-	 * 
+	 * Finds email address with highest risk score and returns that /100
 	 * @param text
 	 * @return the % of Risk
 	 */
 	public int checkEmailRisk(String text)
 	{
-		int risk = 0;
-		
-		ArrayList<String> foundEmails = findEmails(text);
-		
-		return risk;
+		ArrayList<Integer> risk = new ArrayList<>();
+		connect = new DBConnect();
+		int highestRisk = 0;
+		ArrayList<String> foundEmails = findEmailsInText(text);
+		//setClass combine duplicates
+		for(String fe: foundEmails)
+		{
+			Email email = connect.getEmail(fe);
+			//if(email.getNumberOfOccurences() == 0){}
+				//make warning
+			if(email.getListType().equals("black"))
+				risk.add(100);
+		}
+		for(int r: risk)
+		{
+			if(r > highestRisk)
+				highestRisk = r;
+		}
+		return highestRisk;
 	}
 
 	public int checkLinkRisk(String text) {
@@ -29,15 +45,14 @@ public class Controller {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-	
-	public ArrayList<String> findEmails(String text)
+
+	public ArrayList<String> findEmailsInText(String text)
 	{
 		ArrayList<String> emails = new ArrayList<>();
 		int index = 0;
 		int index2 = 0;
 		int count = 0;
 		String email = null;
-		boolean loop = true;
 		while((index = text.indexOf('@',index2)) != -1)
 		{
 			index2 = index;

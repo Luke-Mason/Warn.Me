@@ -140,4 +140,33 @@ public class DBConnect {
 		log.debug("OUT getWebsitesOfListType\n");
 		return ws;
 	}
+	
+	public Email getEmail(String address)
+	{
+		log.debug("IN getEmployees\n");
+		Email email = new Email();		
+		String query = 	  "SELECT * "
+						+ "FROM EMAILS "
+						+ "WHERE address = '?'";
+
+		try (Connection connect = this.connect(); PreparedStatement  inject  = connect.prepareStatement(query))
+		{
+			//Sets '?' to user name in the query
+			//crates a user from the found information
+			inject.setString(1,address);
+			ResultSet output = inject.executeQuery();
+			if(!output.first())
+				email = new Email(address);
+			else
+				email = new Email(output.getString(1),output.getDate(2),output.getDate(3),output.getInt(4),output.getString(5));
+			output.close();
+		}
+		catch(SQLException sqle)
+		{
+			//System.out.println("Getting Employee: "+sqle.getMessage());
+			log.warn(sqle.getMessage());
+		}
+		log.debug("OUT getWebsite\n");
+		return email;
+	}
 }

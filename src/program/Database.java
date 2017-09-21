@@ -57,12 +57,11 @@ public class Database
 		String queryEmails = 
 				"CREATE TABLE IF NOT EXISTS EMAILS "
 				+ "("
-					+ "email_id INTEGER PRIMARY KEY AUTOINCREMENT, "
-					+ "address TEXT NOT NULL,"
-					+ "first_seen DATE NOT NULL,"
+					+ "address TEXT PRIMARY KEY,"
+					+ "first_seen DATE,"
 					+ "last_seen DATE NOT NULL,"
 					+ "number_of_occurences INTEGER NOT NULL,"
-					+ "white_black_listed VARCHAR(1) NOT NULL"
+					+ "white_black_listed VARCHAR(6) NOT NULL"
 				+ ");";
 		
 		String queryBadPhrases = 

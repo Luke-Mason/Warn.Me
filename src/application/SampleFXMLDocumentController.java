@@ -52,16 +52,31 @@ public class SampleFXMLDocumentController implements Initializable{
 		int linkRisk = control.checkLinkRisk(text);
 		int emailRisk = control.checkEmailRisk(text);
 		int phraseRisk = control.checkPhraseRisk(text);
-		System.out.println(emailRisk);
-		int total = linkRisk + emailRisk + phraseRisk;
+		/*CALCULATE RISK*/
+		int safe, linkRiskRatio, emailRiskRatio, phraseRiskRatio;
+		int[] totals = {linkRisk,emailRisk,phraseRisk};
+		int risk = 0;
+		/*FIND BIGEST VALUE*/
+		for(int i = 0; i< totals.length; i++)
+		{
+			if(totals[i]>risk)
+				risk = totals[i];
+		}
+		
+		int totalRisk = linkRisk + emailRisk + phraseRisk;
+		safe = 100 - risk;
+		linkRiskRatio = linkRisk/totalRisk;
+		emailRiskRatio =  emailRisk/totalRisk;
+		phraseRiskRatio =  phraseRisk/totalRisk;
 		
 		//riskAnimation = risk;
 		
 		ObservableList<PieChart.Data> pieChartData = 
                 FXCollections.observableArrayList(
-                    new PieChart.Data("Risky Links", linkRisk),
-                    new PieChart.Data("Risky Email Addresses", emailRisk),
-                    new PieChart.Data("Risky Phrases", phraseRisk));
+                    new PieChart.Data("Risky Links", linkRiskRatio),
+                    new PieChart.Data("Risky Email Addresses", emailRiskRatio),
+                    new PieChart.Data("Risky Phrases", phraseRiskRatio),
+                    new PieChart.Data("Risky Links", safe));
 
         if(textArea.getText() != "")
         {
